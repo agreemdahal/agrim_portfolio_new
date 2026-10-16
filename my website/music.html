@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2338BDF8'/%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandDark: '#12161a',
+                        brandLight: '#f8f9fa'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+        body {
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Oxygen,
+                Ubuntu,
+                Cantarell,
+                sans-serif;
+            transition:
+                background-color 0.3s ease,
+                color 0.3s ease;
+        }
+        .custom-slider {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 999px;
+            cursor: pointer;
+            outline: none;
+            background: #cbd5e1;
+        }
+        .dark .custom-slider {
+            background: #334155;
+        }
+        .custom-slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #475569;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+        .dark .custom-slider::-webkit-slider-thumb {
+            background: #fbbf24;
+        }
+        .custom-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border: none;
+            border-radius: 50%;
+            background: #475569;
+            cursor: pointer;
+        }
+        .dark .custom-slider::-moz-range-thumb {
+            background: #fbbf24;
+        }
+        .playlist-song {
+            transition:
+                background-color 0.2s ease,
+                transform 0.15s ease;
+        }
+        .playlist-song:hover {
+            background-color: rgba(226, 232, 240, 0.6);
+        }
+        .dark .playlist-song:hover {
+            background-color: rgba(30, 41, 59, 0.6);
+        }
+        .playlist-song.active {
+            background-color: rgba(226, 232, 240, 0.9);
+        }
+        .dark .playlist-song.active {
+            background-color: rgba(30, 41, 59, 0.9);
+        }
+        .playlist-song:active {
+            transform: scale(0.99);
+        }
+        .control-button {
+            transition:
+                transform 0.2s ease,
+                background-color 0.2s ease,
+                color 0.2s ease;
+        }
+        .control-button:hover {
+            transform: scale(1.08);
+        }
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        .play-button {
+            width: 56px;
+            height: 56px;
+        }
+        @media (max-width: 640px) {
+            .play-button {
+                width: 50px;
+                height: 50px;
+            }
+        }
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+        .album-art-spinning {
+            animation: spinSlow 12s linear infinite;
+        }
+        .album-art-paused {
+            animation-play-state: paused;
+        }
+        @keyframes eqBounce {
+            0%, 100% { height: 4px; }
+            50%      { height: 14px; }
+        }
+        .eq-bar-1 { animation: eqBounce 0.8s ease-in-out infinite; }
+        .eq-bar-2 { animation: eqBounce 0.8s ease-in-out infinite 0.2s; }
+        .eq-bar-3 { animation: eqBounce 0.8s ease-in-out infinite 0.4s; }
+    </style>
+</head>
+<body class="bg-[#f8f9fa] dark:bg-[#11151c] text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <main class="w-full max-w-2xl mx-auto px-5 py-4 sm:py-5 md:py-8">
+        <header class="flex items-center justify-between pb-5 md:pb-7 border-b border-slate-200/60 dark:border-slate-800/60">
+            <button
+                id="backButton"
+                title="Back to Portfolio"
+                class="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors text-slate-700 dark:text-slate-300 focus:outline-none"
+            >
+                <i class="fa-solid fa-arrow-left text-sm sm:text-base"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-sm sm:text-base font-bold tracking-widest uppercase text-slate-900 dark:text-white">
+                    Music
+                </h1>
+                <p class="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                    Agrim's playlist
+                </p>
+            </div>
+            <button
+                id="themeToggleBtn"
+                title="Toggle Light/Dark Mode"
+                class="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors text-slate-700 dark:text-amber-400 focus:outline-none"
+            >
+                <i id="themeIcon" class="fa-regular fa-sun text-sm sm:text-base"></i>
+            </button>
+        </header>
+        <div id="protocolBanner" class="hidden mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs flex items-start gap-2.5">
+            <i class="fa-solid fa-triangle-exclamation text-base mt-0.5 flex-shrink-0"></i>
+            <div>
+                <p class="font-semibold">Local Server Recommended</p>
+                <p class="text-[11px] mt-0.5 opacity-90">
+                    You opened this page via <code class="font-mono bg-amber-500/20 px-1 py-0.5 rounded">file://</code>.
+                    Modern browsers restrict cross-origin YouTube streaming on raw local files. For flawless audio, open with
+                    <strong>VS Code Live Server</strong>, <code class="font-mono bg-amber-500/20 px-1 py-0.5 rounded">npx serve</code>, or
+                    <code class="font-mono bg-amber-500/20 px-1 py-0.5 rounded">python3 -m http.server</code>.
+                </p>
+            </div>
+        </div>
+        <section class="py-6 md:py-8">
+            <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800/70 bg-white/70 dark:bg-[#151b24]/70 p-5 sm:p-6 shadow-sm backdrop-blur-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                        <span id="liveDot" class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 transition-colors"></span>
+                        <span id="playerStateText">Ready</span>
+                    </span>
+                    <button id="shuffleButton" class="text-xs px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-400 flex items-center gap-1.5 focus:outline-none" title="Shuffle playlist"><i id="shuffleIcon" class="fa-solid fa-shuffle text-[11px]"></i><span id="shuffleText">Shuffle</span></button>
+                </div>
+                <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-2xl overflow-hidden shadow-lg border border-slate-200/60 dark:border-slate-800/60 bg-black">
+                    <div id="playerWrapper" class="absolute inset-0 w-full h-full z-10">
+                        <div id="youtubePlayer" class="w-full h-full"></div>
+                    </div>
+                    <div
+                        id="coverArtOverlay"
+                        class="absolute inset-0 w-full h-full z-20 transition-opacity duration-300 flex items-center justify-center bg-slate-900 overflow-hidden"
+                    >
+                        <img
+                            id="albumArtImg"
+                            src=""
+                            alt="Album Art"
+                            class="w-full h-full object-cover select-none pointer-events-none"
+                        >
+                        <div id="vinylHole" class="hidden absolute w-8 h-8 rounded-full bg-slate-900 border-4 border-slate-800 shadow-inner"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-5">
+                    <h2 id="songTitle" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                        Select a song
+                    </h2>
+                    <p id="songArtist" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">
+                        Agrim's Playlist
+                    </p>
+                    <div id="statusContainer" class="hidden mt-2 text-[11px] leading-relaxed"></div>
+                </div>
+                <div class="mt-6">
+                    <input
+                        type="range"
+                        id="progressBar"
+                        class="custom-slider"
+                        min="0"
+                        max="100"
+                        value="0"
+                        step="0.1"
+                    >
+                    <div class="flex justify-between mt-2 text-[10px] sm:text-xs font-mono text-slate-400 dark:text-slate-500">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center gap-7 sm:gap-9 mt-5">
+                    <button
+                        id="previousButton"
+                        title="Previous (P)"
+                        class="control-button text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none"
+                    >
+                        <i class="fa-solid fa-backward-step text-lg"></i>
+                    </button>
+                    <button
+                        id="playButton"
+                        title="Play / Pause (Space)"
+                        class="play-button control-button rounded-full bg-slate-800 dark:bg-amber-400 text-white dark:text-slate-900 flex items-center justify-center shadow-md focus:outline-none"
+                    >
+                        <i id="playIcon" class="fa-solid fa-play ml-0.5 text-base sm:text-lg"></i>
+                    </button>
+                    <button
+                        id="nextButton"
+                        title="Next (N)"
+                        class="control-button text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none"
+                    >
+                        <i class="fa-solid fa-forward-step text-lg"></i>
+                    </button>
+                </div>
+                <div class="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+                    <button id="muteBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none">
+                        <i id="muteIcon" class="fa-solid fa-volume-high text-xs"></i>
+                    </button>
+                    <input
+                        type="range"
+                        id="volumeSlider"
+                        class="custom-slider w-24 sm:w-28"
+                        min="0"
+                        max="100"
+                        value="100"
+                    >
+                </div>
+            </div>
+        </section>
+        <section class="pb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    Playlist
+                </h2>
+                <span id="songCount" class="text-[10px] sm:text-xs font-mono text-slate-400 dark:text-slate-500">
+                    16 songs
+                </span>
+            </div>
+            <div id="playlist" class="space-y-1"></div>
+            <a
+                id="moreMusicButton"
+                href="https://music.youtube.com/playlist?list=PLZ2tdAEzARYg&si=vghLGUUTAoe5kSDC"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hidden mt-4 w-full items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-[#151b24]/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 transition"
+            >
+                <i class="fa-brands fa-youtube text-red-500"></i>
+                <span>More on YT Playlist</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i>
+            </a>
+        </section>
+    </main>
+    <script>
+        const playlist = [
+            // 16 Nepali songs — shuffled order
+            { title: "Urja", artist: "The Elements", youtubeId: "txmLqITl1h8" },
+            { title: "Asar", artist: "Bipul Chettri", youtubeId: "bNoGXzEL1mA" },
+            { title: "Mero Prem", artist: "AXIX", youtubeId: "mQTxBOEQVgA" },
+            { title: "Khaseka Tara", artist: "Albatross", youtubeId: "G-mToR_pSNw" },
+            { title: "Hataarindai, Bataasindai", artist: "Sajjan Raj Vaidya", youtubeId: "Ogr6ygCwRwc" },
+            { title: "Junkeri", artist: "Bipul Chettri", youtubeId: "56hhDndCQ4o" },
+            { title: "Adhuro Prem", artist: "AXIX", youtubeId: "rHLznjs26V0" },
+            { title: "Nischal", artist: "Albatross", youtubeId: "k3tE3RuG-Mo" },
+            { title: "Putali", artist: "The Elements", youtubeId: "UZM6fd_Xxrw" },
+            { title: "Ram Saili", artist: "Bipul Chettri", youtubeId: "Okrpq-IGLCk" },
+            { title: "Mero Aanshu", artist: "The Edge Band", youtubeId: "KqWfeSk_8ZU" },
+            { title: "Timi Bhane", artist: "Albatross", youtubeId: "4oR9hq7QQKU" },
+            { title: "Nachahe Ko Hoina", artist: "The Edge Band", youtubeId: "A0XDNVvoeOY" },
+            { title: "Syndicate", artist: "Bipul Chettri", youtubeId: "0bfk90rWV9U" },
+            { title: "Thaha Chaina", artist: "The Edge Band", youtubeId: "cDRmIQRrGQU" },
+            { title: "Bachhau", artist: "Albatross", youtubeId: "L4XjEuCPOJY" }
+        ];
+        const playlistElement    = document.getElementById("playlist");
+        const songTitle          = document.getElementById("songTitle");
+        const songArtist         = document.getElementById("songArtist");
+        const statusContainer    = document.getElementById("statusContainer");
+        const albumArtImg        = document.getElementById("albumArtImg");
+        const coverArtOverlay    = document.getElementById("coverArtOverlay");
+        const vinylHole          = document.getElementById("vinylHole");
+        const playButton         = document.getElementById("playButton");
+        const playIcon           = document.getElementById("playIcon");
+        const previousButton     = document.getElementById("previousButton");
+        const nextButton         = document.getElementById("nextButton");
+        const progressBar        = document.getElementById("progressBar");
+        const currentTimeElement = document.getElementById("currentTime");
+        const durationElement    = document.getElementById("duration");
+        const songCount          = document.getElementById("songCount");
+        const backButton         = document.getElementById("backButton");
+        const themeToggleBtn     = document.getElementById("themeToggleBtn");
+        const themeIcon          = document.getElementById("themeIcon");
+        const shuffleButton       = document.getElementById("shuffleButton");
+        const shuffleIcon         = document.getElementById("shuffleIcon");
+        const shuffleText         = document.getElementById("shuffleText");
+        const liveDot            = document.getElementById("liveDot");
+        const playerStateText    = document.getElementById("playerStateText");
+        const volumeSlider       = document.getElementById("volumeSlider");
+        const muteBtn            = document.getElementById("muteBtn");
+        const muteIcon           = document.getElementById("muteIcon");
+        const protocolBanner     = document.getElementById("protocolBanner");
+        const moreMusicButton     = document.getElementById("moreMusicButton");
+        // Put your YouTube Music playlist URL here.
+        const youtubeMusicPlaylistUrl = "https://music.youtube.com/playlist?list=PLZ2tdAEzARYg&si=vghLGUUTAoe5kSDC";
+        const MAX_VISIBLE_SONGS = 15;
+        let player;
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        let isPlayerReady = false;
+        let isShuffle = false;
+        let shuffleQueue = [];
+        let shufflePosition = 0;
+        let progressInterval = null;
+        const YT_STATE = {
+            UNSTARTED:  -1,
+            ENDED:       0,
+            PLAYING:     1,
+            PAUSED:      2,
+            BUFFERING:   3,
+            CUED:        5
+        };
+        // Detect file:// protocol and inform user
+        if (window.location.protocol === "file:") {
+            protocolBanner.classList.remove("hidden");
+        }
+        function loadYouTubeAPI() {
+            if (window.YT && window.YT.Player) {
+                initPlayer();
+                return;
+            }
+            window.onYouTubeIframeAPIReady = function () {
+                initPlayer();
+            };
+            const tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName("script")[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+        function initPlayer() {
+        player = new YT.Player("youtubePlayer", {
+            height: "100%",
+            width: "100%",
+            videoId: playlist[0].youtubeId,
+            playerVars: {
+                autoplay: 0,
+                controls: 1,
+                disablekb: 0,
+                fs: 1,
+                modestbranding: 1,
+                rel: 0,
+                playsinline: 1,
+                enablejsapi: 1,
+                origin: window.location.origin && window.location.origin !== "null" ? window.location.origin : undefined
+            },
+            events: {
+                onReady: onPlayerReady,
+                onStateChange: onPlayerStateChange,
+                onError: onPlayerError
+            }
+        });
+    }
+        function onPlayerReady(event) {
+            isPlayerReady = true;
+            songCount.textContent = playlist.length > MAX_VISIBLE_SONGS
+                ? `${MAX_VISIBLE_SONGS} of ${playlist.length} songs`
+                : `${playlist.length} songs`;
+            renderPlaylist();
+            loadSong(0, false);
+            updateStatus("Player ready. Click play to start.", "info");
+        }
+        function onPlayerStateChange(event) {
+            if (event.data === YT_STATE.PLAYING) {
+                isPlaying = true;
+                updatePlayButton(true);
+                startProgressTracker();
+                liveDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                playerStateText.textContent = "Playing";
+                clearStatus();
+            } else if (event.data === YT_STATE.PAUSED || event.data === YT_STATE.CUED) {
+                isPlaying = false;
+                updatePlayButton(false);
+                stopProgressTracker();
+                liveDot.className = "w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-600";
+                playerStateText.textContent = "Paused";
+            } else if (event.data === YT_STATE.BUFFERING) {
+                isPlaying = true;
+                updatePlayButton(true);
+                liveDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+                playerStateText.textContent = "Loading...";
+            } else if (event.data === YT_STATE.ENDED) {
+                isPlaying = false;
+                stopProgressTracker();
+                loadNextSong(true);
+            }
+        }
+        function onPlayerError(event) {
+            const song = playlist[currentSongIndex];
+            isPlaying = false;
+            updatePlayButton(false);
+            stopProgressTracker();
+            let reason = `Code ${event.data}: Playback error.`;
+            if (event.data === 150 || event.data === 101) {
+                reason = "Owner disabled external embedding for this track.";
+            } else if (event.data === 100 || event.data === 2) {
+                reason = "Track unavailable or removed.";
+            }
+            updateStatus(
+                `${reason} <a href="https://www.youtube.com/watch?v=${song.youtubeId}" target="_blank" rel="noopener noreferrer" class="underline font-semibold ml-1 text-amber-500 hover:text-amber-400">Open on YouTube ↗</a>`,
+                "error"
+            );
+        }
+        function startProgressTracker() {
+            stopProgressTracker();
+            progressInterval = setInterval(() => {
+                if (!player || !player.getDuration || !isPlayerReady) return;
+                const duration = player.getDuration();
+                if (!duration || duration <= 0) return;
+                const currentTime = player.getCurrentTime();
+                const percentage = (currentTime / duration) * 100;
+                progressBar.value = percentage;
+                currentTimeElement.textContent = formatTime(currentTime);
+                durationElement.textContent = formatTime(duration);
+            }, 500);
+        }
+        function stopProgressTracker() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+        function formatTime(seconds) {
+            if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+            const minutes = Math.floor(seconds / 60);
+            const remaining = Math.floor(seconds % 60).toString().padStart(2, "0");
+            return `${minutes}:${remaining}`;
+        }
+        function updateStatus(html, type = "info") {
+            statusContainer.innerHTML = html;
+            statusContainer.classList.remove("hidden", "text-rose-500", "text-amber-500", "text-slate-400");
+            if (type === "error") {
+                statusContainer.classList.add("text-rose-500");
+            } else if (type === "warn") {
+                statusContainer.classList.add("text-amber-500");
+            } else {
+                statusContainer.classList.add("text-slate-400");
+            }
+        }
+        function clearStatus() {
+            statusContainer.innerHTML = "";
+            statusContainer.classList.add("hidden");
+        }
+        function updatePlayButton(playing) {
+            if (playing) {
+                playIcon.className = "fa-solid fa-pause text-base sm:text-lg";
+                playButton.title = "Pause (Space)";
+                albumArtImg.classList.add("album-art-spinning");
+                albumArtImg.classList.remove("album-art-paused");
+                vinylHole.classList.remove("hidden");
+            } else {
+                playIcon.className = "fa-solid fa-play ml-0.5 text-base sm:text-lg";
+                playButton.title = "Play (Space)";
+                albumArtImg.classList.add("album-art-paused");
+            }
+        }
+        function loadSong(index, autoplay = false) {
+            if (!playlist.length || !isPlayerReady) return;
+            const playableCount = Math.min(playlist.length, MAX_VISIBLE_SONGS);
+            if (index < 0) index = playableCount - 1;
+            if (index >= playableCount) index = 0;
+            currentSongIndex = index;
+            const song = playlist[currentSongIndex];
+            songTitle.textContent = song.title;
+            songArtist.textContent = song.artist;
+            // Load high-resolution YouTube cover artwork
+            albumArtImg.src = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+            progressBar.value = 0;
+            currentTimeElement.textContent = "0:00";
+            durationElement.textContent = "0:00";
+            clearStatus();
+            renderPlaylist();
+            if (autoplay) {
+                player.loadVideoById(song.youtubeId);
+            } else {
+                player.cueVideoById(song.youtubeId);
+            }
+        }
+        function renderPlaylist() {
+            playlistElement.innerHTML = "";
+            // Only the first 15 songs are shown/playable on this page.
+            const visibleSongs = playlist.slice(0, MAX_VISIBLE_SONGS);
+            visibleSongs.forEach((song, index) => {
+                const isActive = index === currentSongIndex;
+                const item = document.createElement("button");
+                item.type = "button";
+                item.className = `playlist-song w-full flex items-center gap-3 sm:gap-4 text-left px-3 py-3 rounded-xl focus:outline-none ${
+                    isActive ? "active font-medium" : ""
+                }`;
+                item.innerHTML = `
+                    <span class="song-number w-7 sm:w-8 flex-shrink-0 text-center text-[10px] sm:text-xs font-mono ${
+                        isActive ? "text-amber-500 font-bold" : "text-slate-400 dark:text-slate-500"
+                    }">
+                        ${String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div class="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200 dark:bg-slate-800">
+                        <img src="https://img.youtube.com/vi/${song.youtubeId}/mqdefault.jpg" alt="${song.title}" class="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                    <span class="flex-1 min-w-0">
+                        <span class="playlist-song-title block truncate text-xs sm:text-sm font-semibold ${
+                            isActive ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"
+                        }">
+                            ${song.title}
+                        </span>
+                        <span class="playlist-song-artist block truncate text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                            ${song.artist}
+                        </span>
+                    </span>
+                    <span class="song-status w-6 flex-shrink-0 text-center">
+                        ${
+                            isActive
+                                ? `<span class="inline-flex items-end gap-0.5 h-3">
+                                       <span class="w-0.5 bg-amber-500 dark:bg-amber-400 eq-bar-1"></span>
+                                       <span class="w-0.5 bg-amber-500 dark:bg-amber-400 eq-bar-2"></span>
+                                       <span class="w-0.5 bg-amber-500 dark:bg-amber-400 eq-bar-3"></span>
+                                   </span>`
+                                : ""
+                        }
+                    </span>
+                `;
+                item.addEventListener("click", () => {
+                    if (index === currentSongIndex && isPlayerReady) {
+                        togglePlayPause();
+                        return;
+                    }
+                    loadSong(index, true);
+                });
+                playlistElement.appendChild(item);
+            });
+            // Show the external playlist button only when there are more than 15 songs.
+            if (playlist.length > MAX_VISIBLE_SONGS) {
+                moreMusicButton.href = youtubeMusicPlaylistUrl;
+                moreMusicButton.classList.remove("hidden");
+                moreMusicButton.classList.add("flex");
+            } else {
+                moreMusicButton.classList.add("hidden");
+                moreMusicButton.classList.remove("flex");
+            }
+            songCount.textContent = playlist.length > MAX_VISIBLE_SONGS
+                ? `${MAX_VISIBLE_SONGS} of ${playlist.length} songs`
+                : `${playlist.length} songs`;
+        }
+        function togglePlayPause() {
+            if (!player || !isPlayerReady) return;
+            const state = player.getPlayerState();
+            if (state === YT_STATE.PLAYING || state === YT_STATE.BUFFERING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
+        playButton.addEventListener("click", togglePlayPause);
+        function buildShuffleQueue() {
+            const count = Math.min(MAX_VISIBLE_SONGS, playlist.length);
+            shuffleQueue = Array.from({ length: count }, (_, i) => i);
+            for (let i = shuffleQueue.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffleQueue[i], shuffleQueue[j]] = [shuffleQueue[j], shuffleQueue[i]];
+            }
+            if (shuffleQueue.length > 1 && shuffleQueue[0] === currentSongIndex) {
+                [shuffleQueue[0], shuffleQueue[1]] = [shuffleQueue[1], shuffleQueue[0]];
+            }
+            shufflePosition = Math.max(0, shuffleQueue.indexOf(currentSongIndex));
+        }
+
+        function loadNextSong(autoplay = true) {
+            if (isShuffle) {
+                if (!shuffleQueue.length) buildShuffleQueue();
+                shufflePosition++;
+                if (shufflePosition >= shuffleQueue.length) {
+                    buildShuffleQueue();
+                    shufflePosition = 0;
+                }
+                loadSong(shuffleQueue[shufflePosition], autoplay);
+            } else {
+                loadSong(currentSongIndex + 1, autoplay);
+            }
+        }
+
+        previousButton.addEventListener("click", () => {
+            if (!player || !isPlayerReady) return;
+            if (player.getCurrentTime() > 3) {
+                player.seekTo(0, true);
+                return;
+            }
+            loadSong(currentSongIndex - 1, true);
+        });
+        nextButton.addEventListener("click", () => {
+            if (!player || !isPlayerReady) return;
+            loadNextSong(true);
+        });
+        progressBar.addEventListener("input", () => {
+            if (!player || !isPlayerReady) return;
+            const duration = player.getDuration();
+            if (!duration || duration <= 0) return;
+            const seekTime = (progressBar.value / 100) * duration;
+            player.seekTo(seekTime, true);
+        });
+        volumeSlider.addEventListener("input", () => {
+            if (!player || !isPlayerReady) return;
+            const vol = parseInt(volumeSlider.value, 10);
+            player.setVolume(vol);
+            if (player.isMuted()) player.unMute();
+            updateVolumeIcon(vol);
+        });
+        muteBtn.addEventListener("click", () => {
+            if (!player || !isPlayerReady) return;
+            if (player.isMuted()) {
+                player.unMute();
+                updateVolumeIcon(player.getVolume());
+            } else {
+                player.mute();
+                muteIcon.className = "fa-solid fa-volume-xmark text-xs text-rose-500";
+            }
+        });
+        function updateVolumeIcon(vol) {
+            if (vol === 0) {
+                muteIcon.className = "fa-solid fa-volume-off text-xs";
+            } else if (vol < 50) {
+                muteIcon.className = "fa-solid fa-volume-low text-xs";
+            } else {
+                muteIcon.className = "fa-solid fa-volume-high text-xs";
+            }
+        }
+        shuffleButton.addEventListener("click", () => {
+            isShuffle = !isShuffle;
+            if (isShuffle) {
+                buildShuffleQueue();
+                shuffleButton.classList.add("bg-slate-800", "text-white", "dark:bg-amber-400", "dark:text-slate-900");
+                shuffleButton.classList.remove("text-slate-600", "dark:text-slate-400");
+                shuffleText.textContent = "Shuffle On";
+            } else {
+                shuffleQueue = [];
+                shufflePosition = 0;
+                shuffleButton.classList.remove("bg-slate-800", "text-white", "dark:bg-amber-400", "dark:text-slate-900");
+                shuffleButton.classList.add("text-slate-600", "dark:text-slate-400");
+                shuffleText.textContent = "Shuffle";
+            }
+        });
+
+        backButton.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+        const html = document.documentElement;
+        if (
+            localStorage.theme === "dark" ||
+            (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+            html.classList.add("dark");
+            themeIcon.className = "fa-regular fa-moon text-sm sm:text-base text-amber-300";
+        } else {
+            html.classList.remove("dark");
+            themeIcon.className = "fa-regular fa-sun text-sm sm:text-base text-amber-500";
+        }
+        themeToggleBtn.addEventListener("click", () => {
+            if (html.classList.contains("dark")) {
+                html.classList.remove("dark");
+                localStorage.theme = "light";
+                themeIcon.className = "fa-regular fa-sun text-sm sm:text-base text-amber-500";
+            } else {
+                html.classList.add("dark");
+                localStorage.theme = "dark";
+                themeIcon.className = "fa-regular fa-moon text-sm sm:text-base text-amber-300";
+            }
+        });
+        document.addEventListener("keydown", (event) => {
+            const tag = (event.target.tagName || "").toLowerCase();
+            if (tag === "input" || tag === "textarea") return;
+            if (event.code === "Space") {
+                event.preventDefault();
+                togglePlayPause();
+            } else if (event.code === "KeyN") {
+                event.preventDefault();
+                loadNextSong(true);
+            } else if (event.code === "KeyP") {
+                event.preventDefault();
+                loadSong(currentSongIndex - 1, true);
+            } else if (event.code === "ArrowRight") {
+                event.preventDefault();
+                if (player && isPlayerReady) player.seekTo(player.getCurrentTime() + 5, true);
+            } else if (event.code === "ArrowLeft") {
+                event.preventDefault();
+                if (player && isPlayerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 5), true);
+            }
+        });
+        loadYouTubeAPI();
+    </script>
+</body>
+</html>

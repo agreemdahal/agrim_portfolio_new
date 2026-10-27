@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agrim Dahal</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23004225'/%3E%3C/svg%3E">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandDark: '#12161a',
+                        brandLight: '#f8f9fa'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        body {
+            transition:
+                background-color 0.3s ease,
+                color 0.3s ease;
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                Roboto,
+                Oxygen,
+                Ubuntu,
+                Cantarell,
+                sans-serif;
+        }
+
+        .scroll-area {
+            overflow: visible;
+            min-height: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Keep the whole page touch-scrollable on mobile, including the footer. */
+        .site-shell {
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: auto;
+            overflow: visible;
+        }
+
+        .scroll-area::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition:
+                grid-template-rows 0.35s
+                cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .accordion-inner {
+            min-height: 0;
+            visibility: hidden;
+            opacity: 0;
+            transition:
+                visibility 0.35s ease,
+                opacity 0.35s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            grid-template-rows: 1fr;
+        }
+
+        .accordion-item.active .accordion-inner {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .profile-flip {
+            width: 6rem;
+            height: 6rem;
+            flex-shrink: 0;
+            perspective: 700px;
+            cursor: pointer;
+        }
+
+        .profile-flip-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition:
+                transform 0.8s ease;
+        }
+
+        .profile-flip-front,
+        .profile-flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            box-shadow:
+                0 2px 6px rgba(0, 0, 0, 0.08);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .profile-flip-back {
+            transform: rotateY(180deg);
+        }
+
+        .profile-flip.flipped .profile-flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        @media (min-width: 640px) {
+            .profile-flip {
+                width: 7rem;
+                height: 7rem;
+            }
+        }
+
+        footer {
+            transition:
+                padding-top 0.25s ease;
+        }
+
+    </style>
+
+</head>
+
+<body
+    class="
+        bg-[#f8f9fa]
+        dark:bg-[#11151c]
+        text-slate-800
+        dark:text-slate-200
+        transition-colors
+        duration-300
+    "
+>
+
+<main
+    class="
+        site-shell
+        w-full
+        max-w-2xl
+        mx-auto
+        px-5
+        py-4
+        sm:py-5
+        md:py-8
+        flex
+        flex-col
+    "
+>
+
+<div class="flex-1 min-h-0 scroll-area">
+
+    <!-- HEADER -->
+
+    <header
+        class="
+            flex
+            items-center
+            justify-center
+            gap-2.5
+            sm:gap-4
+            pb-5
+            md:pb-7
+            border-b
+            border-slate-200/60
+            dark:border-slate-800/60
+            text-xs
+            sm:text-sm
+            font-medium
+            text-slate-600
+            dark:text-slate-400
+        "
+    >
+
+        <button
+            id="themeToggleBtn"
+            title="Toggle Light/Dark Mode"
+            class="
+                p-2
+                rounded-full
+                hover:bg-slate-200/50
+                dark:hover:bg-slate-800/50
+                transition-colors
+                text-slate-700
+                dark:text-amber-400
+                focus:outline-none
+            "
+        >
+            <i
+                id="themeIcon"
+                class="fa-regular fa-sun text-sm sm:text-base"
+            ></i>
+        </button>
+
+        <span class="text-slate-300 dark:text-slate-700">|</span>
+
+        <div
+            class="flex items-center gap-1.5"
+            title="Local Time"
+        >
+            <i class="fa-regular fa-clock text-xs opacity-75"></i>
+            <span
+                id="liveClock"
+                class="font-mono text-xs sm:text-sm"
+            >
+                10:09 AM
+            </span>
+        </div>
+
+        <span class="text-slate-300 dark:text-slate-700">|</span>
+
+        <div
+            class="flex items-center gap-1.5"
+            title="Current Temperature"
+        >
+            <i class="fa-solid fa-temperature-half text-xs opacity-75"></i>
+
+            <span
+                id="liveTemp"
+                class="font-mono text-xs sm:text-sm"
+            >
+                24°C
+            </span>
+        </div>
+
+        <span class="text-slate-300 dark:text-slate-700">|</span>
+
+        <div
+            class="
+                flex
+                items-center
+                gap-1
+                font-semibold
+                text-slate-800
+                dark:text-slate-200
+                tracking-wider
+            "
+            title="Location Shortcode"
+        >
+            <span id="locationCode">KTM</span>
+        </div>
+
+    </header>
+
+
+    <!-- PROFILE -->
+
+    <section
+        class="
+            py-5
+            md:py-7
+            flex
+            flex-col
+            sm:flex-row
+            items-center
+            sm:items-center
+            gap-5
+            sm:gap-7
+            text-center
+            sm:text-left
+            border-b
+            border-slate-200
+            dark:border-slate-800
+        "
+    >
+
+        <div
+            id="profileFlip"
+            class="profile-flip"
+        >
+
+            <div
+                id="profileFlipInner"
+                class="profile-flip-inner"
+            >
+
+                <img
+                    src="img/first.webp"
+                    alt="Profile Photo 1"
+                    class="profile-flip-front"
+                >
+
+                <img
+                    src="img/IMG_9048.jpg"
+                    alt="Profile Photo 2"
+                    class="profile-flip-back"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="flex-1">
+
+            <h1
+                class="
+                    text-lg
+                    sm:text-xl
+                    md:text-2xl
+                    font-extrabold
+                    tracking-wider
+                    text-slate-900
+                    dark:text-white
+                    uppercase
+                    mb-2
+                "
+            >
+                Agrim Raj Dahal
+            </h1>
+
+            <div
+                class="
+                    text-xs
+                    sm:text-sm
+                    md:text-base
+                    text-slate-600
+                    dark:text-slate-400
+                    leading-relaxed
+                "
+            >
+
+                <p
+                    class="
+                        font-medium
+                        text-slate-800
+                        dark:text-slate-200
+                        mb-2
+                        leading-relaxed
+                        italic
+                    "
+                >
+                    Turning ideas into meaningful work.
+                </p>
+
+                <p>
+                    I believe great projects are built through collaboration,
+                    continuous learning, and a willingness to improve every day.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- EXPERIENCE -->
+
+    <section class="py-4 md:py-5">
+
+        <h2
+            class="
+                text-xs
+                font-bold
+                uppercase
+                tracking-widest
+                text-slate-400
+                dark:text-slate-500
+                mb-3
+            "
+        >
+            Experience and Training
+        </h2>
+
+        <div class="space-y-2.5 text-xs sm:text-sm">
+
+
+            <!-- PROJECT MANAGEMENT -->
+
+            <div class="accordion-item pb-2.5 transition-colors">
+
+                <button
+                    class="
+                        accordion-header
+                        w-full
+                        py-1.5
+                        flex
+                        items-center
+                        justify-between
+                        text-left
+                        focus:outline-none
+                        cursor-pointer
+                        group
+                    "
+                >
+
+                    <div class="pr-2 flex-1">
+
+                        <span
+                            class="
+                                font-bold
+                                text-slate-900
+                                dark:text-white
+                                group-hover:text-blue-600
+                                dark:group-hover:text-blue-400
+                                transition-colors
+                            "
+                        >
+                            Project Management Training
+                        </span>
+
+                        <span
+                            class="
+                                text-slate-500
+                                dark:text-slate-400
+                                font-medium
+                            "
+                        >
+                            @ Leapfrog Connect
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="
+                            flex
+                            items-center
+                            gap-3
+                            flex-shrink-0
+                        "
+                    >
+
+                        <span
+                            class="
+                                text-[11px]
+                                sm:text-xs
+                                text-slate-400
+                                dark:text-slate-500
+                                font-mono
+                            "
+                        >
+                            September 2026 -- October 2026
+                        </span>
+
+                        <i
+                            class="
+                                fa-solid
+                                fa-chevron-down
+                                text-xs
+                                text-slate-400
+                                transition-transform
+                                duration-300
+                                accordion-icon
+                            "
+                        ></i>
+
+                    </div>
+
+                </button>
+
+                <div class="accordion-content">
+
+                    <div
+                        class="
+                            accordion-inner
+                            pt-2
+                            pb-1
+                            text-xs
+                            sm:text-sm
+                            text-slate-600
+                            dark:text-slate-400
+                            leading-relaxed
+                            space-y-2.5
+                        "
+                    >
+
+                        <p>
+                            Developed practical project management skills through
+                            hands-on training in Agile methodologies, Scrum,
+                            Kanban, project estimation, stakeholder and scope
+                            management, budgeting, project metrics, and end-to-end
+                            project delivery. Also gained experience with project
+                            communication, status reporting, and tools such as
+                            Jira and Confluence.
+                        </p>
+
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Jira
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Confluence
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Agile
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Scrum
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Kanban
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Project Planning
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PIE LOGISTICS -->
+
+            <div
+                class="
+                    accordion-item
+                    border-b
+                    border-slate-200/60
+                    dark:border-slate-800/60
+                    pb-2.5
+                    transition-colors
+                "
+            >
+
+                <button
+                    class="
+                        accordion-header
+                        w-full
+                        py-1.5
+                        flex
+                        items-center
+                        justify-between
+                        text-left
+                        focus:outline-none
+                        cursor-pointer
+                        group
+                    "
+                >
+
+                    <div class="pr-2 flex-1">
+
+                        <span
+                            class="
+                                font-bold
+                                text-slate-900
+                                dark:text-white
+                                group-hover:text-blue-600
+                                dark:group-hover:text-blue-400
+                                transition-colors
+                            "
+                        >
+                            Data Management & Analysis
+                        </span>
+
+                        <span
+                            class="
+                                text-slate-500
+                                dark:text-slate-400
+                                font-medium
+                            "
+                        >
+                            @ Pie Logistics, Calgary
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="
+                            flex
+                            items-center
+                            gap-3
+                            flex-shrink-0
+                        "
+                    >
+
+                        <span
+                            class="
+                                text-[11px]
+                                sm:text-xs
+                                text-slate-400
+                                dark:text-slate-500
+                                font-mono
+                            "
+                        >
+                            June 2025 -- Present
+                        </span>
+
+                        <i
+                            class="
+                                fa-solid
+                                fa-chevron-down
+                                text-xs
+                                text-slate-400
+                                transition-transform
+                                duration-300
+                                accordion-icon
+                            "
+                        ></i>
+
+                    </div>
+
+                </button>
+
+                <div class="accordion-content">
+
+                    <div
+                        class="
+                            accordion-inner
+                            pt-2
+                            pb-1
+                            text-xs
+                            sm:text-sm
+                            text-slate-600
+                            dark:text-slate-400
+                            leading-relaxed
+                            space-y-2.5
+                        "
+                    >
+
+                        <p>
+                            Started in the Logistics Tracking team as a Data Clerk,
+                            managing shipment data, load confirmations, tickets,
+                            and client communications. Later transitioned to the
+                            Data team, where I worked on organizing and analyzing
+                            operational data, supporting data visualization, and
+                            coordinating information across clients and internal teams.
+                        </p>
+
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Excel
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Data Visualization
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Client Communication
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Project Coordination
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QA -->
+
+            <div
+                class="
+                    accordion-item
+                    border-b
+                    border-slate-200/60
+                    dark:border-slate-800/60
+                    pb-2.5
+                    transition-colors
+                "
+            >
+
+                <button
+                    class="
+                        accordion-header
+                        w-full
+                        py-1.5
+                        flex
+                        items-center
+                        justify-between
+                        text-left
+                        focus:outline-none
+                        cursor-pointer
+                        group
+                    "
+                >
+
+                    <div class="pr-2 flex-1">
+
+                        <span
+                            class="
+                                font-bold
+                                text-slate-900
+                                dark:text-white
+                                group-hover:text-blue-600
+                                dark:group-hover:text-blue-400
+                                transition-colors
+                            "
+                        >
+                            Quality Analysis Intern
+                        </span>
+
+                        <span
+                            class="
+                                text-slate-500
+                                dark:text-slate-400
+                                font-medium
+                            "
+                        >
+                            @ AEIRC.Tech
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="
+                            flex
+                            items-center
+                            gap-3
+                            flex-shrink-0
+                        "
+                    >
+
+                        <span
+                            class="
+                                text-[11px]
+                                sm:text-xs
+                                text-slate-400
+                                dark:text-slate-500
+                                font-mono
+                            "
+                        >
+                            January 2023 -- March 2023
+                        </span>
+
+                        <i
+                            class="
+                                fa-solid
+                                fa-chevron-down
+                                text-xs
+                                text-slate-400
+                                transition-transform
+                                duration-300
+                                accordion-icon
+                            "
+                        ></i>
+
+                    </div>
+
+                </button>
+
+                <div class="accordion-content">
+
+                    <div
+                        class="
+                            accordion-inner
+                            pt-2
+                            pb-1
+                            text-xs
+                            sm:text-sm
+                            text-slate-600
+                            dark:text-slate-400
+                            leading-relaxed
+                            space-y-2.5
+                        "
+                    >
+
+                        <p>
+                            Performed manual testing for the company's software
+                            project, identifying, documenting, and reporting bugs
+                            while coordinating with the development team. Gained
+                            hands-on experience with API testing and Postman.
+                        </p>
+
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Manual Testing
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Bug Tracking & Reporting
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                Postman
+                            </span>
+
+                            <span class="px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/80 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                API Testing
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ME -->
+
+    <section
+        class="
+            py-4
+            md:py-5
+            border-t
+            border-slate-200/60
+            dark:border-slate-800/60
+        "
+    >
+
+        <h2
+            class="
+                text-xs
+                font-bold
+                uppercase
+                tracking-widest
+                text-slate-400
+                dark:text-slate-500
+                mb-3
+            "
+        >
+            ME
+        </h2>
+
+        <div
+            class="
+                text-xs
+                sm:text-sm
+                md:text-base
+                text-slate-600
+                dark:text-slate-400
+                leading-relaxed
+                space-y-2.5
+            "
+        >
+
+            <p
+                class="
+                    font-medium
+                    text-slate-800
+                    dark:text-slate-200
+                    leading-relaxed
+                    italic
+                "
+            >
+                I value empathy, appreciate the people around me, and believe
+                that every little contribution helps us grow together.
+            </p>
+
+            <p>
+                I love the simple excitement of football, the feeling of being
+                on a trail, and the calm that comes with getting away from the
+                usual routine. There is something special about having things
+                to look forward to, whether it’s a game, a hike, or a new place
+                to explore.
+            </p>
+
+            <p>
+                I enjoy being around nature, discovering new places, experiencing
+                new things, and noticing the small details that make each place
+                feel different.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<footer
+    class="
+        pt-4
+        mt-3
+        border-t
+        border-slate-200/60
+        dark:border-slate-800/60
+        flex
+        items-center
+        justify-center
+        gap-8
+        md:gap-10
+        flex-shrink-0
+    "
+>
+
+    <!-- LINKEDIN -->
+
+    <a
+        href="https://www.linkedin.com/in/agrim-raj-dahal-137a83210/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="LinkedIn Profile"
+        class="
+            text-slate-500
+            dark:text-slate-400
+            hover:text-blue-600
+            dark:hover:text-blue-400
+            transition-colors
+            text-xl
+            md:text-2xl
+            transform
+            hover:scale-110
+            duration-200
+        "
+    >
+        <i class="fa-brands fa-linkedin"></i>
+    </a>
+
+
+    <!-- MUSIC -->
+
+    <button
+        id="musicToggleBtn"
+        title="Open Music Player"
+        class="
+            text-slate-500
+            dark:text-slate-400
+            hover:text-emerald-500
+            dark:hover:text-emerald-400
+            transition-colors
+            text-xl
+            md:text-2xl
+            focus:outline-none
+            transform
+            hover:scale-110
+            duration-200
+        "
+    >
+        <i class="fa-solid fa-music"></i>
+    </button>
+
+
+    <!-- GITHUB -->
+
+    <a
+        href="https://github.com/agreemdahal"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="GitHub Profile"
+        class="
+            text-slate-500
+            dark:text-slate-400
+            hover:text-slate-900
+            dark:hover:text-white
+            transition-colors
+            text-xl
+            md:text-2xl
+            transform
+            hover:scale-110
+            duration-200
+        "
+    >
+        <i class="fa-brands fa-github"></i>
+    </a>
+
+</footer>
+
+</main>
+
+
+<script>
+
+    /* ================================
+       1. ACCORDION
+    ================================= */
+
+    const accordionItems =
+        document.querySelectorAll('.accordion-item');
+
+    accordionItems.forEach(item => {
+
+        const header =
+            item.querySelector('.accordion-header');
+
+        header.addEventListener('click', () => {
+
+            const isActive =
+                item.classList.contains('active');
+
+            accordionItems.forEach(otherItem => {
+                otherItem.classList.remove('active');
+            });
+
+            if (!isActive) {
+                item.classList.add('active');
+            }
+
+        });
+
+    });
+
+
+    /* ================================
+       2. LIGHT / DARK MODE
+    ================================= */
+
+    const themeToggleBtn =
+        document.getElementById('themeToggleBtn');
+
+    const themeIcon =
+        document.getElementById('themeIcon');
+
+    const html =
+        document.documentElement;
+
+    if (
+        localStorage.theme === 'dark' ||
+        (
+            !('theme' in localStorage) &&
+            window.matchMedia(
+                '(prefers-color-scheme: dark)'
+            ).matches
+        )
+    ) {
+
+        html.classList.add('dark');
+
+        themeIcon.className =
+            'fa-regular fa-moon text-sm sm:text-base text-amber-300';
+
+    } else {
+
+        html.classList.remove('dark');
+
+        themeIcon.className =
+            'fa-regular fa-sun text-sm sm:text-base text-amber-500';
+
+    }
+
+
+    themeToggleBtn.addEventListener('click', () => {
+
+        if (html.classList.contains('dark')) {
+
+            html.classList.remove('dark');
+
+            localStorage.theme = 'light';
+
+            themeIcon.className =
+                'fa-regular fa-sun text-sm sm:text-base text-amber-500';
+
+        } else {
+
+            html.classList.add('dark');
+
+            localStorage.theme = 'dark';
+
+            themeIcon.className =
+                'fa-regular fa-moon text-sm sm:text-base text-amber-300';
+
+        }
+
+    });
+
+
+    /* ================================
+       3. LIVE CLOCK
+    ================================= */
+
+    function updateClock() {
+
+        const now = new Date();
+
+        let hours = now.getHours();
+
+        const minutes =
+            String(now.getMinutes()).padStart(2, '0');
+
+        const ampm =
+            hours >= 12 ? 'PM' : 'AM';
+
+        hours =
+            hours % 12 || 12;
+
+        document.getElementById('liveClock')
+            .textContent =
+            `${hours}:${minutes} ${ampm}`;
+
+    }
+
+    setInterval(updateClock, 1000);
+
+    updateClock();
+
+
+    /* ================================
+       4. WEATHER + LOCATION
+    ================================= */
+
+    const cityShortcodes = {
+
+        "Kathmandu": "KTM",
+        "Pokhara": "PKR",
+        "Lalitpur": "LTP",
+        "Madhyapur Thimi": "KTM",
+        "Bhaktapur": "BKT",
+
+        "New York": "NYC",
+        "London": "LDN",
+        "Delhi": "DEL",
+        "Tokyo": "TYO",
+        "Sydney": "SYD",
+        "Toronto": "YTO",
+
+        "Los Angeles": "LAX",
+        "Chicago": "CHI",
+        "Houston": "HOU",
+        "Dallas": "DAL",
+        "Austin": "AUS",
+        "San Francisco": "SFO",
+        "Seattle": "SEA",
+        "Boston": "BOS",
+        "Miami": "MIA",
+        "Phoenix": "PHX",
+        "Denver": "DEN",
+        "Las Vegas": "LAS"
+
+    };
+
+
+    const defaultLat = 27.7172;
+    const defaultLon = 85.3240;
+
+
+    async function fetchWeather(lat, lon) {
+
+        try {
+
+            const res =
+                await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
+                );
+
+            if (!res.ok) {
+                throw new Error('Weather fetch failed');
+            }
+
+            const data =
+                await res.json();
+
+            const temp =
+                Math.round(
+                    data.current_weather.temperature
+                );
+
+            document.getElementById('liveTemp')
+                .textContent =
+                `${temp}°C`;
+
+        } catch (err) {
+
+            console.log(
+                'Weather fallback used:',
+                err
+            );
+
+            document.getElementById('liveTemp')
+                .textContent =
+                '24°C';
+
+        }
+
+    }
+
+
+    async function reverseGeocode(lat, lon) {
+
+        try {
+
+            const res =
+                await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+                );
+
+            if (!res.ok) {
+                throw new Error('Reverse geocode failed');
+            }
+
+            const data =
+                await res.json();
+
+            const city =
+                data.address.city ||
+                data.address.town ||
+                data.address.municipality ||
+                data.address.state ||
+                "Kathmandu";
+
+            let code =
+                cityShortcodes[city];
+
+            if (!code) {
+
+                code =
+                    city
+                        .replace(/[^a-zA-Z]/g, '')
+                        .substring(0, 3)
+                        .toUpperCase();
+
+            }
+
+            document.getElementById('locationCode')
+                .textContent =
+                code || "KTM";
+
+        } catch (err) {
+
+            console.log(
+                'Reverse geocoding failed:',
+                err
+            );
+
+            document.getElementById('locationCode')
+                .textContent =
+                'KTM';
+
+        }
+
+    }
+
+
+    function useVisitorLocation() {
+
+        navigator.geolocation.getCurrentPosition(
+
+            (pos) => {
+
+                const lat =
+                    pos.coords.latitude;
+
+                const lon =
+                    pos.coords.longitude;
+
+                fetchWeather(lat, lon);
+
+                reverseGeocode(lat, lon);
+
+            },
+
+            () => {
+
+                fetchWeather(
+                    defaultLat,
+                    defaultLon
+                );
+
+                document.getElementById(
+                    'locationCode'
+                ).textContent = 'KTM';
+
+            },
+
+            {
+                enableHighAccuracy: false,
+                timeout: 5000,
+                maximumAge: 300000
+            }
+
+        );
+
+    }
+
+
+    if ("geolocation" in navigator) {
+
+        if ("permissions" in navigator) {
+
+            navigator.permissions
+                .query({
+                    name: 'geolocation'
+                })
+                .then(permissionStatus => {
+
+                    if (
+                        permissionStatus.state === "granted"
+                    ) {
+
+                        useVisitorLocation();
+
+                    } else if (
+                        permissionStatus.state === "prompt"
+                    ) {
+
+                        useVisitorLocation();
+
+                    } else {
+
+                        fetchWeather(
+                            defaultLat,
+                            defaultLon
+                        );
+
+                    }
+
+                })
+                .catch(() => {
+                    useVisitorLocation();
+                });
+
+        } else {
+
+            useVisitorLocation();
+
+        }
+
+    } else {
+
+        fetchWeather(
+            defaultLat,
+            defaultLon
+        );
+
+    }
+
+
+    /* ================================
+       5. PROFILE PHOTO FLIP
+    ================================= */
+
+    const profileFlip =
+        document.getElementById(
+            "profileFlip"
+        );
+
+
+    function flipProfilePhoto() {
+
+        profileFlip.classList.toggle(
+            "flipped"
+        );
+
+    }
+
+
+    profileFlip.addEventListener(
+        "click",
+        flipProfilePhoto
+    );
+
+
+    setInterval(
+        flipProfilePhoto,
+        5000
+    );
+
+
+    /* ================================
+       6. MUSIC PAGE
+    ================================= */
+
+    const musicToggleBtn =
+        document.getElementById(
+            'musicToggleBtn'
+        );
+
+
+    musicToggleBtn.addEventListener(
+    'click',
+    () => {
+        window.location.href = 'music.html';
+    }
+);
+
+</script>
+
+</body>
+</html>
